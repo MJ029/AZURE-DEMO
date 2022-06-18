@@ -118,11 +118,11 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"container_name": "demo",
-										"file_path": "output/parquet",
-										"file_name": {
-											"value": "@split(item().name, '.')[0]",
+										"file_path": {
+											"value": "@concat('output/parquet', toUpper(split(item().name, '.')[0]))",
 											"type": "Expression"
-										}
+										},
+										"file_name": "dataset.parquet"
 									}
 								}
 							]
