@@ -19,8 +19,14 @@
 						"referenceName": "BLOB_CSV_RW",
 						"type": "DatasetReference",
 						"parameters": {
-							"container_name": "demo",
-							"file_path": "input",
+							"container_name": {
+								"value": "@pipeline().parameters.container",
+								"type": "Expression"
+							},
+							"file_path": {
+								"value": "@pipeline().parameters.input_path",
+								"type": "Expression"
+							},
 							"file_name": "*.csv"
 						}
 					},
@@ -103,8 +109,14 @@
 									"referenceName": "BLOB_CSV_RW",
 									"type": "DatasetReference",
 									"parameters": {
-										"container_name": "demo",
-										"file_path": "input",
+										"container_name": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
+										"file_path": {
+											"value": "@pipeline().parameters.input_path",
+											"type": "Expression"
+										},
 										"file_name": {
 											"value": "@item().name",
 											"type": "Expression"
@@ -117,7 +129,10 @@
 									"referenceName": "BLOB_PARQUET_RW",
 									"type": "DatasetReference",
 									"parameters": {
-										"container_name": "demo",
+										"container_name": {
+											"value": "@pipeline().parameters.container",
+											"type": "Expression"
+										},
 										"file_path": {
 											"value": "@concat('output/parquet/', toUpper(split(item().name, '.')[0]))",
 											"type": "Expression"
@@ -131,6 +146,16 @@
 				}
 			}
 		],
+		"parameters": {
+			"container": {
+				"type": "string",
+				"defaultValue": "demo"
+			},
+			"input_path": {
+				"type": "string",
+				"defaultValue": "input"
+			}
+		},
 		"annotations": []
 	}
 }
