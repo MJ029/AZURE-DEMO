@@ -119,7 +119,7 @@
 									"parameters": {
 										"container_name": "demo",
 										"file_path": {
-											"value": "@concat('output/parquet', toUpper(split(item().name, '.')[0]))",
+											"value": "@concat('output/parquet/', toUpper(split(item().name, '.')[0]))",
 											"type": "Expression"
 										},
 										"file_name": "dataset.parquet"
