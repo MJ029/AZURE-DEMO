@@ -10,6 +10,10 @@
 		"LS_AKV_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "@{linkedService().PRM_AKV}"
+		},
+		"LS_ABS_properties_typeProperties_connectionString_secretName": {
+			"type": "string",
+			"defaultValue": "@linkedService().LS_PRM_BLOB_CONN_STRNG_SCRT_NAME"
 		}
 	},
 	"variables": {
@@ -34,6 +38,92 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_ABS')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"LS_PRM_BLOB_CONN_STRNG_SCRT_NAME": {
+						"type": "string",
+						"defaultValue": "BLOB-CONN-STRING-DEV"
+					}
+				},
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LS_AKV",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"PRM_AKV": "https://campaign-kv-devtest.vault.azure.net/"
+							}
+						},
+						"secretName": {
+							"value": "[parameters('LS_ABS_properties_typeProperties_connectionString_secretName')]",
+							"type": "Expression"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_AKV')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BLOB_CSV_RW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_ABS",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"LS_PRM_BLOB_CONN_STRNG_SCRT_NAME": "BLOB-CONN-STRING-DEV"
+					}
+				},
+				"parameters": {
+					"container_name": {
+						"type": "string"
+					},
+					"file_path": {
+						"type": "string"
+					},
+					"file_name": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().file_name",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().file_path",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().container_name",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_ABS')]"
+			]
 		}
 	]
 }
