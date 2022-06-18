@@ -1,0 +1,16 @@
+{
+	"name": "LS_AKV",
+	"properties": {
+		"parameters": {
+			"PRM_AKV": {
+				"type": "string",
+				"defaultValue": "https://campaign-kv-devtest.vault.azure.net/"
+			}
+		},
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "@{linkedService().PRM_AKV}"
+		}
+	}
+}
