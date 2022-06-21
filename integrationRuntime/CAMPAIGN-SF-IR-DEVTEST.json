@@ -1,0 +1,6 @@
+{
+	"name": "CAMPAIGN-SF-IR-DEVTEST",
+	"properties": {
+		"type": "SelfHosted"
+	}
+}
