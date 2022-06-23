@@ -21,6 +21,10 @@
 			"delimiter": {
 				"type": "string",
 				"defaultValue": ","
+			},
+			"escape_char": {
+				"type": "string",
+				"defaultValue": "\\"
 			}
 		},
 		"annotations": [],
@@ -45,7 +49,10 @@
 				"value": "@dataset().delimiter",
 				"type": "Expression"
 			},
-			"escapeChar": "\\",
+			"escapeChar": {
+				"value": "@dataset().escape_char",
+				"type": "Expression"
+			},
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
 		},
