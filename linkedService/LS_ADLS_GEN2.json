@@ -1,0 +1,35 @@
+{
+	"name": "LS_ADLS_GEN2",
+	"properties": {
+		"parameters": {
+			"APP_ID": {
+				"type": "string"
+			},
+			"App_SECRET": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobFS",
+		"typeProperties": {
+			"url": "https://campaignadlsgen2devtest.dfs.core.windows.net",
+			"tenant": "44bb2b85-300c-44d0-b08a-658ac3914f86",
+			"servicePrincipalId": "@{linkedService().APP_ID}",
+			"servicePrincipalCredentialType": "ServicePrincipalKey",
+			"servicePrincipalCredential": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_AKV",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"PRM_AKV": "https://campaign-kv-devtest.vault.azure.net/"
+					}
+				},
+				"secretName": {
+					"value": "@linkedService().App_SECRET",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}
