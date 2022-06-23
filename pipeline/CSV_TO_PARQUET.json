@@ -77,7 +77,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('READ-CONFIG').output.value",
+						"value": "@activity('FIlter Active Records').output",
 						"type": "Expression"
 					},
 					"isSequential": true,
