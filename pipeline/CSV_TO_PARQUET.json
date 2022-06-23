@@ -90,7 +90,7 @@
 							"typeProperties": {
 								"variableName": "target_path",
 								"value": {
-									"value": "@concat(item().TableName, '/', split(split(utcnow(), 'T')[0], '-')[0], '/', split(split(utcnow(), 'T')[0], '-')[1], '/', split(split(utcnow(), 'T')[0], '-')[2])",
+									"value": "@concat(item().TableName, '/', split(split(utcnow(), 'T')[0], '-')[0], '/', split(split(utcnow(), 'T')[0], '-')[1], '/', split(split(utcnow(), 'T')[0], '-')[2], '/', split(split(utcnow(), 'T')[1], ':')[0], split(split(utcnow(), 'T')[1], ':')[1])",
 									"type": "Expression"
 								}
 							}
