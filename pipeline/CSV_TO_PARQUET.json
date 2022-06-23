@@ -99,7 +99,7 @@
 							}
 						},
 						{
-							"name": "CREATE RAW ENTRY",
+							"name": "CREATE RAW TBALE",
 							"type": "Copy",
 							"dependsOn": [
 								{
@@ -189,6 +189,40 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "CHECK LOAD STATUS",
+							"type": "IfCondition",
+							"dependsOn": [
+								{
+									"activity": "CREATE RAW TBALE",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"expression": {
+									"value": "@equals(item().LoadType, 'Full')",
+									"type": "Expression"
+								},
+								"ifTrueActivities": [
+									{
+										"name": "CREATE CURATED TABLE",
+										"type": "DatabricksNotebook",
+										"dependsOn": [],
+										"policy": {
+											"timeout": "7.00:00:00",
+											"retry": 0,
+											"retryIntervalInSeconds": 30,
+											"secureOutput": false,
+											"secureInput": false
+										},
+										"userProperties": []
+									}
+								]
+							}
 						}
 					]
 				}
