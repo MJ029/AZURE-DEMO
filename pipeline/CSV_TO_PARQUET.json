@@ -58,7 +58,7 @@
 						"type": "Expression"
 					},
 					"condition": {
-						"value": "@equals(item().IS_Active, 'True')",
+						"value": "@equals(item().IS_Active, 'TRUE')",
 						"type": "Expression"
 					}
 				}
