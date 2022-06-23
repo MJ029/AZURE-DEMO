@@ -54,7 +54,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('READ-CONFIG').output",
+						"value": "@activity('READ-CONFIG').output.value",
 						"type": "Expression"
 					},
 					"condition": {
