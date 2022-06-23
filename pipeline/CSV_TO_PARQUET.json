@@ -56,6 +56,10 @@
 					"items": {
 						"value": "@activity('READ-CONFIG').output",
 						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals('A', 'A')",
+						"type": "Expression"
 					}
 				}
 			}
