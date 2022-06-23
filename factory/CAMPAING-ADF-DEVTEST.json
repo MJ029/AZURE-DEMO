@@ -1,0 +1,12 @@
+{
+	"name": "CAMPAING-ADF-DEVTEST",
+	"properties": {
+		"globalParameters": {
+			"GBL_PRM_APP_ID": {
+				"type": "string",
+				"value": "a9c8615d-3e8d-4ec8-9984-9cdfc54771e3"
+			}
+		}
+	},
+	"location": "eastus"
+}
