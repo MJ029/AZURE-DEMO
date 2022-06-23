@@ -226,6 +226,10 @@
 												"table_name": {
 													"value": "@item().TableName",
 													"type": "Expression"
+												},
+												"load_type": {
+													"value": "@item().LoadType",
+													"type": "Expression"
 												}
 											}
 										},
