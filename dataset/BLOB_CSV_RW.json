@@ -17,6 +17,10 @@
 			},
 			"file_name": {
 				"type": "string"
+			},
+			"delimiter": {
+				"type": "string",
+				"defaultValue": ","
 			}
 		},
 		"annotations": [],
@@ -37,7 +41,10 @@
 					"type": "Expression"
 				}
 			},
-			"columnDelimiter": ",",
+			"columnDelimiter": {
+				"value": "@dataset().delimiter",
+				"type": "Expression"
+			},
 			"escapeChar": "\\",
 			"firstRowAsHeader": true,
 			"quoteChar": "\""
