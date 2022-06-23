@@ -1,0 +1,35 @@
+{
+	"name": "LS_ADB",
+	"properties": {
+		"parameters": {
+			"PRM_ADB_URL": {
+				"type": "string",
+				"defaultValue": "https://adb-6947215888317529.9.azuredatabricks.net"
+			},
+			"PRM_ADB_ACCESS_TOKEN_NAME": {
+				"type": "string",
+				"defaultValue": "ADB-ACCESS-TOKEN"
+			}
+		},
+		"annotations": [],
+		"type": "AzureDatabricks",
+		"typeProperties": {
+			"domain": "@linkedService().PRM_ADB_URL",
+			"accessToken": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_AKV",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"PRM_AKV": "https://campaign-kv-devtest.vault.azure.net/"
+					}
+				},
+				"secretName": {
+					"value": "@linkedService().PRM_ADB_ACCESS_TOKEN_NAME",
+					"type": "Expression"
+				}
+			},
+			"existingClusterId": "0620-022650-zm22jn9y"
+		}
+	}
+}
