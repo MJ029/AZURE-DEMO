@@ -219,7 +219,21 @@
 											"secureOutput": false,
 											"secureInput": false
 										},
-										"userProperties": []
+										"userProperties": [],
+										"linkedServiceName": {
+											"referenceName": "LS_ADB",
+											"type": "LinkedServiceReference",
+											"parameters": {
+												"PRM_ADB_URL": {
+													"value": "@pipeline().globalParameters.GBL_PRM_ADB_URL",
+													"type": "Expression"
+												},
+												"PRM_ADB_ACCESS_TOKEN_NAME": {
+													"value": "@pipeline().globalParameters.GBL_PRM_ADB_ACCESS_TOKEN_NAME",
+													"type": "Expression"
+												}
+											}
+										}
 									}
 								]
 							}
