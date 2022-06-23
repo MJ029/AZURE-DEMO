@@ -13,6 +13,10 @@
 			"GBL_PRM_ADB_URL": {
 				"type": "string",
 				"value": "https://adb-6947215888317529.9.azuredatabricks.net"
+			},
+			"GBL_PRM_ADB_ACCESS_TOKEN_NAME": {
+				"type": "string",
+				"value": "ADB-ACCESS-TOKEN"
 			}
 		}
 	},
