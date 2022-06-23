@@ -177,7 +177,15 @@
 											"value": "@variables('target_path')",
 											"type": "Expression"
 										},
-										"file_name": "dataset.avro"
+										"file_name": "dataset.avro",
+										"APP_ID": {
+											"value": "@pipeline().globalParameters.GBL_PRM_APP_ID",
+											"type": "Expression"
+										},
+										"APP_SECRET": {
+											"value": "@pipeline().globalParameters.GBL_PRM_APP_SECRET_NAME",
+											"type": "Expression"
+										}
 									}
 								}
 							]
