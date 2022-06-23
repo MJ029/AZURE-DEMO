@@ -9,6 +9,10 @@
 			"GBL_PRM_APP_SECRET_NAME": {
 				"type": "string",
 				"value": "APP-SECRET"
+			},
+			"GBL_PRM_ADB_URL": {
+				"type": "string",
+				"value": "https://adb-6947215888317529.9.azuredatabricks.net"
 			}
 		}
 	},
