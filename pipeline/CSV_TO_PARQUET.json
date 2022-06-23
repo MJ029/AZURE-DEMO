@@ -30,7 +30,10 @@
 						"referenceName": "BLOB_CSV_RW",
 						"type": "DatasetReference",
 						"parameters": {
-							"container_name": "demo",
+							"container_name": {
+								"value": "@pipeline().parameters.source_container",
+								"type": "Expression"
+							},
 							"file_path": "Configs",
 							"file_name": "Table-Config.csv",
 							"delimiter": ",",
@@ -94,11 +97,109 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "CREATE RAW ENTRY",
+							"type": "Copy",
+							"dependsOn": [
+								{
+									"activity": "BUILD-TARGET-PATH",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AvroSink",
+									"storeSettings": {
+										"type": "AzureBlobFSWriteSettings"
+									},
+									"formatSettings": {
+										"type": "AvroWriteSettings"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "BLOB_CSV_RW",
+									"type": "DatasetReference",
+									"parameters": {
+										"container_name": {
+											"value": "@pipeline().parameters.source_container",
+											"type": "Expression"
+										},
+										"file_path": {
+											"value": "@concat(pipeline().parameters.source_path, '/', item().TableName)",
+											"type": "Expression"
+										},
+										"file_name": "dataset.csv",
+										"delimiter": "|",
+										"escape_char": "\\"
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "GEN2_AVRO_RW",
+									"type": "DatasetReference",
+									"parameters": {
+										"container_name": "raw",
+										"file_path": {
+											"value": "@variables('target_path')",
+											"type": "Expression"
+										},
+										"file_name": "dataset.avro"
+									}
+								}
+							]
 						}
 					]
 				}
 			}
 		],
+		"parameters": {
+			"source_container": {
+				"type": "string",
+				"defaultValue": "demo"
+			},
+			"source_path": {
+				"type": "string",
+				"defaultValue": "IN-BOUND"
+			},
+			"target_path": {
+				"type": "string",
+				"defaultValue": "OUT-BOUND"
+			}
+		},
 		"variables": {
 			"target_path": {
 				"type": "String"
