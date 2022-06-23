@@ -220,6 +220,15 @@
 											"secureInput": false
 										},
 										"userProperties": [],
+										"typeProperties": {
+											"notebookPath": "/FRAMEWORK/ETL/RUN_ETL",
+											"baseParameters": {
+												"table_name": {
+													"value": "@item().TableName",
+													"type": "Expression"
+												}
+											}
+										},
 										"linkedServiceName": {
 											"referenceName": "LS_ADB",
 											"type": "LinkedServiceReference",
