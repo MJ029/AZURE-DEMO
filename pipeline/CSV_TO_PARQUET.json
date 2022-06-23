@@ -1,16 +1,6 @@
 {
 	"name": "CSV_TO_PARQUET",
 	"properties": {
-		"parameters": {
-			"container": {
-				"type": "string",
-				"defaultValue": "demo"
-			},
-			"input_path": {
-				"type": "string",
-				"defaultValue": "input"
-			}
-		},
 		"annotations": []
 	}
 }
