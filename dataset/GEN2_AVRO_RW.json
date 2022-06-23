@@ -3,7 +3,17 @@
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "LS_ADLS_GEN2",
-			"type": "LinkedServiceReference"
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"APP_ID": {
+					"value": "@dataset().APP_ID",
+					"type": "Expression"
+				},
+				"App_SECRET": {
+					"value": "@dataset().APP_SECRET",
+					"type": "Expression"
+				}
+			}
 		},
 		"parameters": {
 			"container_name": {
@@ -13,6 +23,12 @@
 				"type": "string"
 			},
 			"file_name": {
+				"type": "string"
+			},
+			"APP_ID": {
+				"type": "string"
+			},
+			"APP_SECRET": {
 				"type": "string"
 			}
 		},
