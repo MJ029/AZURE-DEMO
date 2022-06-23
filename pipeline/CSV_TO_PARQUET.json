@@ -62,8 +62,48 @@
 						"type": "Expression"
 					}
 				}
+			},
+			{
+				"name": "RUN EACH TABLE",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "FIlter Active Records",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('READ-CONFIG').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "BUILD-TARGET-PATH",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "target_path",
+								"value": {
+									"value": "@concat(item().TableName, '/', split(split(utcnow(), 'T')[0], '-')[0], '/', split(split(utcnow(), 'T')[0], '-')[1], '/', split(split(utcnow(), 'T')[0], '-')[2])",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"target_path": {
+				"type": "String"
+			}
+		},
 		"annotations": []
 	}
 }
