@@ -191,8 +191,8 @@
 							]
 						},
 						{
-							"name": "CHECK-LOAD-TYPE",
-							"type": "IfCondition",
+							"name": "CREATE-CURATED-TABLE",
+							"type": "DatabricksNotebook",
 							"dependsOn": [
 								{
 									"activity": "CREATE-RAW-TABLE",
@@ -201,54 +201,48 @@
 									]
 								}
 							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
 							"userProperties": [],
 							"typeProperties": {
-								"expression": {
-									"value": "@equals(item().LoadType, 'Full')",
-									"type": "Expression"
-								},
-								"ifTrueActivities": [
-									{
-										"name": "CREATE-CURATED-TABLE",
-										"type": "DatabricksNotebook",
-										"dependsOn": [],
-										"policy": {
-											"timeout": "7.00:00:00",
-											"retry": 0,
-											"retryIntervalInSeconds": 30,
-											"secureOutput": false,
-											"secureInput": false
-										},
-										"userProperties": [],
-										"typeProperties": {
-											"notebookPath": "/FRAMEWORK/ETL/RUN_ETL",
-											"baseParameters": {
-												"table_name": {
-													"value": "@item().TableName",
-													"type": "Expression"
-												},
-												"load_type": {
-													"value": "@item().LoadType",
-													"type": "Expression"
-												}
-											}
-										},
-										"linkedServiceName": {
-											"referenceName": "LS_ADB",
-											"type": "LinkedServiceReference",
-											"parameters": {
-												"PRM_ADB_URL": {
-													"value": "@pipeline().globalParameters.GBL_PRM_ADB_URL",
-													"type": "Expression"
-												},
-												"PRM_ADB_ACCESS_TOKEN_NAME": {
-													"value": "@pipeline().globalParameters.GBL_PRM_ADB_ACCESS_TOKEN_NAME",
-													"type": "Expression"
-												}
-											}
-										}
+								"notebookPath": "/FRAMEWORK/ETL/RUN_ETL",
+								"baseParameters": {
+									"table_name": {
+										"value": "@item().TableName",
+										"type": "Expression"
+									},
+									"load_type": {
+										"value": "@item().LoadType",
+										"type": "Expression"
+									},
+									"primary_keys": {
+										"value": "@item().PrimaryColumn",
+										"type": "Expression"
+									},
+									"timestamp_keys": {
+										"value": "@item().TimestampColumn",
+										"type": "Expression"
 									}
-								]
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_ADB",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"PRM_ADB_URL": {
+										"value": "@pipeline().globalParameters.GBL_PRM_ADB_URL",
+										"type": "Expression"
+									},
+									"PRM_ADB_ACCESS_TOKEN_NAME": {
+										"value": "@pipeline().globalParameters.GBL_PRM_ADB_ACCESS_TOKEN_NAME",
+										"type": "Expression"
+									}
+								}
 							}
 						}
 					]
