@@ -209,7 +209,7 @@
 								},
 								"ifTrueActivities": [
 									{
-										"name": "CREATE CURATED TABLE",
+										"name": "CREATE-CURATED-TABLE",
 										"type": "DatabricksNotebook",
 										"dependsOn": [],
 										"policy": {
