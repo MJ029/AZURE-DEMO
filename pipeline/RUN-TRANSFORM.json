@@ -98,22 +98,16 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"notebookPath": "/FRAMEWORK/ETL/RUN_ETL",
+								"notebookPath": "/FRAMEWORK/ETL/RUN-TRANSFORMER",
 								"baseParameters": {
 									"table_name": {
 										"value": "@item().TableName",
 										"type": "Expression"
 									},
-									"load_type": {
-										"value": "@item().LoadType",
-										"type": "Expression"
-									},
-									"primary_keys": {
-										"value": "@item().PrimaryColumn",
-										"type": "Expression"
-									},
-									"timestamp_keys": {
-										"value": "@item().TimestampColumn",
+									"source_path": "/mnt/curated",
+									"target_path": "/mnt/analytics",
+									"sector": {
+										"value": "@item().Sector",
 										"type": "Expression"
 									}
 								}
