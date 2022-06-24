@@ -44,7 +44,7 @@
 				}
 			},
 			{
-				"name": "FIlter Active Records",
+				"name": "FILTER-RECORDS",
 				"type": "Filter",
 				"dependsOn": [
 					{
@@ -67,11 +67,11 @@
 				}
 			},
 			{
-				"name": "RUN EACH TABLE",
+				"name": "RUN-EACH-TABLE",
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "FIlter Active Records",
+						"activity": "FILTER-RECORDS",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -99,7 +99,7 @@
 							}
 						},
 						{
-							"name": "CREATE RAW TBALE",
+							"name": "CREATE-RAW-TABLE",
 							"type": "Copy",
 							"dependsOn": [
 								{
@@ -191,11 +191,11 @@
 							]
 						},
 						{
-							"name": "CHECK LOAD STATUS",
+							"name": "CHECK-LOAD-STATUS",
 							"type": "IfCondition",
 							"dependsOn": [
 								{
-									"activity": "CREATE RAW TBALE",
+									"activity": "CREATE-RAW-TABLE",
 									"dependencyConditions": [
 										"Succeeded"
 									]
