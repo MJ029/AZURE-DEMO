@@ -1,5 +1,5 @@
 {
-	"name": "BLOB-TO-ADLS",
+	"name": "RUN-ETL",
 	"properties": {
 		"activities": [
 			{
