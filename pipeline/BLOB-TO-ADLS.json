@@ -1,5 +1,5 @@
 {
-	"name": "CSV_TO_PARQUET",
+	"name": "BLOB-TO-ADLS",
 	"properties": {
 		"activities": [
 			{
