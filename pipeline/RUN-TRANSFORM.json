@@ -1,0 +1,161 @@
+{
+	"name": "RUN-TRANSFORM",
+	"properties": {
+		"activities": [
+			{
+				"name": "READ-CONFIG",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "DelimitedTextSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						},
+						"formatSettings": {
+							"type": "DelimitedTextReadSettings"
+						}
+					},
+					"dataset": {
+						"referenceName": "BLOB_CSV_RW",
+						"type": "DatasetReference",
+						"parameters": {
+							"container_name": {
+								"value": "@pipeline().parameters.source_container",
+								"type": "Expression"
+							},
+							"file_path": "Configs",
+							"file_name": "Table-Config-ETL.csv",
+							"delimiter": ",",
+							"escape_char": "\""
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "FILTER-RECORDS",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "READ-CONFIG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('READ-CONFIG').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().IS_Active, 'TRUE')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "RUN-EACH-TABLE",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "FILTER-RECORDS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('FILTER-RECORDS').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "CREATE-CURATED-TABLE",
+							"type": "DatabricksNotebook",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"notebookPath": "/FRAMEWORK/ETL/RUN_ETL",
+								"baseParameters": {
+									"table_name": {
+										"value": "@item().TableName",
+										"type": "Expression"
+									},
+									"load_type": {
+										"value": "@item().LoadType",
+										"type": "Expression"
+									},
+									"primary_keys": {
+										"value": "@item().PrimaryColumn",
+										"type": "Expression"
+									},
+									"timestamp_keys": {
+										"value": "@item().TimestampColumn",
+										"type": "Expression"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LS_ADB",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"PRM_ADB_URL": {
+										"value": "@pipeline().globalParameters.GBL_PRM_ADB_URL",
+										"type": "Expression"
+									},
+									"PRM_ADB_ACCESS_TOKEN_NAME": {
+										"value": "@pipeline().globalParameters.GBL_PRM_ADB_ACCESS_TOKEN_NAME",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"source_container": {
+				"type": "string",
+				"defaultValue": "demo"
+			},
+			"source_path": {
+				"type": "string",
+				"defaultValue": "IN-BOUND"
+			},
+			"target_path": {
+				"type": "string",
+				"defaultValue": "OUT-BOUND"
+			}
+		},
+		"variables": {
+			"target_path": {
+				"type": "String"
+			}
+		},
+		"annotations": []
+	}
+}
