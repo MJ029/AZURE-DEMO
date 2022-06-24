@@ -7,13 +7,25 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "CAMPAING-ADF-DEVTEST"
 		},
-		"LS_AKV_properties_typeProperties_baseUrl": {
-			"type": "string",
-			"defaultValue": "@{linkedService().PRM_AKV}"
-		},
 		"LS_ABS_properties_typeProperties_connectionString_secretName": {
 			"type": "string",
 			"defaultValue": "@linkedService().LS_PRM_BLOB_CONN_STRNG_SCRT_NAME"
+		},
+		"LS_ADLS_GEN2_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://campaignadlsgen2devtest.dfs.core.windows.net"
+		},
+		"LS_ADLS_GEN2_properties_typeProperties_tenant": {
+			"type": "string",
+			"defaultValue": "44bb2b85-300c-44d0-b08a-658ac3914f86"
+		},
+		"LS_ADLS_GEN2_properties_typeProperties_servicePrincipalId": {
+			"type": "string",
+			"defaultValue": "@{linkedService().APP_ID}"
+		},
+		"LS_AKV_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "@{linkedService().PRM_AKV}"
 		},
 		"containerUri": {
 			"type": "string",
@@ -47,6 +59,15 @@
 					},
 					"LS_ABS_properties_typeProperties_connectionString_secretName": {
 						"value": "[parameters('LS_ABS_properties_typeProperties_connectionString_secretName')]"
+					},
+					"LS_ADLS_GEN2_properties_typeProperties_url": {
+						"value": "[parameters('LS_ADLS_GEN2_properties_typeProperties_url')]"
+					},
+					"LS_ADLS_GEN2_properties_typeProperties_tenant": {
+						"value": "[parameters('LS_ADLS_GEN2_properties_typeProperties_tenant')]"
+					},
+					"LS_ADLS_GEN2_properties_typeProperties_servicePrincipalId": {
+						"value": "[parameters('LS_ADLS_GEN2_properties_typeProperties_servicePrincipalId')]"
 					}
 				}
 			},

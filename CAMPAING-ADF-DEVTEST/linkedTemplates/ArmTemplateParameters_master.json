@@ -5,11 +5,20 @@
 		"factoryName": {
 			"value": "CAMPAING-ADF-DEVTEST"
 		},
-		"LS_AKV_properties_typeProperties_baseUrl": {
-			"value": "@{linkedService().PRM_AKV}"
-		},
 		"LS_ABS_properties_typeProperties_connectionString_secretName": {
 			"value": "@linkedService().LS_PRM_BLOB_CONN_STRNG_SCRT_NAME"
+		},
+		"LS_ADLS_GEN2_properties_typeProperties_url": {
+			"value": "https://campaignadlsgen2devtest.dfs.core.windows.net"
+		},
+		"LS_ADLS_GEN2_properties_typeProperties_tenant": {
+			"value": "44bb2b85-300c-44d0-b08a-658ac3914f86"
+		},
+		"LS_ADLS_GEN2_properties_typeProperties_servicePrincipalId": {
+			"value": "@{linkedService().APP_ID}"
+		},
+		"LS_AKV_properties_typeProperties_baseUrl": {
+			"value": "@{linkedService().PRM_AKV}"
 		},
 		"containerUri": {
 			"value": ""
