@@ -191,7 +191,7 @@
 							]
 						},
 						{
-							"name": "CHECK-LOAD-STATUS",
+							"name": "CHECK-LOAD-TYPE",
 							"type": "IfCondition",
 							"dependsOn": [
 								{
