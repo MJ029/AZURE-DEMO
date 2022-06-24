@@ -35,7 +35,7 @@
 								"type": "Expression"
 							},
 							"file_path": "Configs",
-							"file_name": "Table-Config-ETL.csv",
+							"file_name": "Table-Config-PROCESS.csv",
 							"delimiter": ",",
 							"escape_char": "\""
 						}
