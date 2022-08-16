@@ -1,0 +1,46 @@
+{
+	"name": "READ_CONFIGS_AKV",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LS_BLOB_USING_AKV",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"ls_prm_conn_string_name": "BLOB-CONN-CTRING"
+			}
+		},
+		"parameters": {
+			"container_name": {
+				"type": "string"
+			},
+			"file_path": {
+				"type": "string"
+			},
+			"file_name": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "Excel",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"fileName": {
+					"value": "@dataset().file_name",
+					"type": "Expression"
+				},
+				"folderPath": {
+					"value": "@dataset().file_path",
+					"type": "Expression"
+				},
+				"container": {
+					"value": "@dataset().container_name",
+					"type": "Expression"
+				}
+			},
+			"range": "",
+			"firstRowAsHeader": true
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

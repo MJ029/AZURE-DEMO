@@ -1,0 +1,158 @@
+{
+	"name": "READ-WRITE-MULTIPLE-CSV-FILES_AKV",
+	"properties": {
+		"activities": [
+			{
+				"name": "READ-CONFIG",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "ExcelSource",
+						"storeSettings": {
+							"type": "AzureBlobStorageReadSettings",
+							"recursive": true,
+							"enablePartitionDiscovery": false
+						}
+					},
+					"dataset": {
+						"referenceName": "READ_CONFIGS_AKV",
+						"type": "DatasetReference",
+						"parameters": {
+							"container_name": "configs",
+							"file_path": "pre-sales",
+							"file_name": "SIMPLE-CONFIG.xlsx"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "FILTER-ACTIVE-RECORDS",
+				"type": "Filter",
+				"dependsOn": [
+					{
+						"activity": "READ-CONFIG",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('READ-CONFIG').output.value",
+						"type": "Expression"
+					},
+					"condition": {
+						"value": "@equals(item().is_Active, '1')",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "ITERATE-TABLES",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "FILTER-ACTIVE-RECORDS",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('FILTER-ACTIVE-RECORDS').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "COPY-DATA-TO-OUT-BOUNT",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "DelimitedTextSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "DelimitedTextReadSettings"
+									}
+								},
+								"sink": {
+									"type": "DelimitedTextSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "DelimitedTextWriteSettings",
+										"quoteAllText": true,
+										"fileExtension": ".txt"
+									}
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"typeConversion": true,
+									"typeConversionSettings": {
+										"allowDataTruncation": true,
+										"treatBooleanAsNumber": false
+									}
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "DS_BLOB_READ_WRITE_CSV_AKV",
+									"type": "DatasetReference",
+									"parameters": {
+										"container_name": "in-bound",
+										"file_path": "DataSets",
+										"file_name": "@concat(item().TableName, '.csv')",
+										"c_delimiter": ","
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "DS_BLOB_READ_WRITE_CSV_AKV",
+									"type": "DatasetReference",
+									"parameters": {
+										"container_name": "out-bound",
+										"file_path": "DataSets-AUTO-AKV",
+										"file_name": "@concat(item().TableName, '.csv')",
+										"c_delimiter": ","
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"annotations": [],
+		"lastPublishTime": "2022-08-16T05:31:30Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}
