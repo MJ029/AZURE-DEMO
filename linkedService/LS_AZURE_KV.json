@@ -1,0 +1,16 @@
+{
+	"name": "LS_AZURE_KV",
+	"properties": {
+		"parameters": {
+			"ls_prm_kv_name": {
+				"type": "string",
+				"defaultValue": "https://kv-surya-dev-cindia-001.vault.azure.net"
+			}
+		},
+		"annotations": [],
+		"type": "AzureKeyVault",
+		"typeProperties": {
+			"baseUrl": "@{linkedService().ls_prm_kv_name}"
+		}
+	}
+}
