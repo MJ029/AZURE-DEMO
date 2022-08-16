@@ -1,0 +1,54 @@
+{
+    "name": "OP_Claims_History",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "LS_BLOB_USING_ACCOUNT_KEY",
+            "type": "LinkedServiceReference"
+        },
+        "annotations": [],
+        "type": "DelimitedText",
+        "typeProperties": {
+            "location": {
+                "type": "AzureBlobStorageLocation",
+                "fileName": "Claims_History.csv",
+                "folderPath": "DataSets",
+                "container": "out-bound"
+            },
+            "columnDelimiter": ",",
+            "escapeChar": "\\",
+            "firstRowAsHeader": true,
+            "quoteChar": "\""
+        },
+        "schema": [
+            {
+                "name": "Transaction_Date",
+                "type": "String"
+            },
+            {
+                "name": "EMP_ID",
+                "type": "String"
+            },
+            {
+                "name": "Claim_Type",
+                "type": "String"
+            },
+            {
+                "name": "Claim_Amount",
+                "type": "String"
+            },
+            {
+                "name": "Processed_Amount",
+                "type": "String"
+            },
+            {
+                "name": "Elligibility",
+                "type": "String"
+            },
+            {
+                "name": "Claim_Status",
+                "type": "String"
+            }
+        ]
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}

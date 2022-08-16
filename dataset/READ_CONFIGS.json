@@ -1,0 +1,44 @@
+{
+    "name": "READ_CONFIGS",
+    "properties": {
+        "linkedServiceName": {
+            "referenceName": "LS_BLOB_USING_ACCOUNT_KEY",
+            "type": "LinkedServiceReference"
+        },
+        "parameters": {
+            "container_name": {
+                "type": "string"
+            },
+            "file_path": {
+                "type": "string"
+            },
+            "file_name": {
+                "type": "string"
+            }
+        },
+        "annotations": [],
+        "type": "Excel",
+        "typeProperties": {
+            "sheetName": "Sheet1",
+            "location": {
+                "type": "AzureBlobStorageLocation",
+                "fileName": {
+                    "value": "@dataset().file_name",
+                    "type": "Expression"
+                },
+                "folderPath": {
+                    "value": "@dataset().file_path",
+                    "type": "Expression"
+                },
+                "container": {
+                    "value": "@dataset().container_name",
+                    "type": "Expression"
+                }
+            },
+            "range": "",
+            "firstRowAsHeader": true
+        },
+        "schema": []
+    },
+    "type": "Microsoft.DataFactory/factories/datasets"
+}
