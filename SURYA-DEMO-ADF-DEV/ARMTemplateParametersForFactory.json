@@ -1,0 +1,18 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"value": "SURYA-DEMO-ADF-DEV"
+		},
+		"LS_BLOB_USING_ACCOUNT_KEY_connectionString": {
+			"value": ""
+		},
+		"LS_AZURE_KV_properties_typeProperties_baseUrl": {
+			"value": "@{linkedService().ls_prm_kv_name}"
+		},
+		"LS_BLOB_USING_AKV_properties_typeProperties_connectionString_secretName": {
+			"value": "@linkedService().ls_prm_conn_string_name"
+		}
+	}
+}
