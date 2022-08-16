@@ -1,0 +1,29 @@
+{
+	"name": "LS_BLOB_USING_AKV",
+	"properties": {
+		"parameters": {
+			"ls_prm_conn_string_name": {
+				"type": "string",
+				"defaultValue": "BLOB-CONN-CTRING"
+			}
+		},
+		"annotations": [],
+		"type": "AzureBlobStorage",
+		"typeProperties": {
+			"connectionString": {
+				"type": "AzureKeyVaultSecret",
+				"store": {
+					"referenceName": "LS_AZURE_KV",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"ls_prm_kv_name": "https://kv-surya-dev-cindia-001.vault.azure.net"
+					}
+				},
+				"secretName": {
+					"value": "@linkedService().ls_prm_conn_string_name",
+					"type": "Expression"
+				}
+			}
+		}
+	}
+}
