@@ -80,7 +80,14 @@
 						{
 							"name": "COPY-DATA-TO-OUT-BOUNT",
 							"type": "Copy",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "Update-Table-Name",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "7.00:00:00",
 								"retry": 0,
@@ -129,8 +136,14 @@
 									"parameters": {
 										"container_name": "in-bound",
 										"file_path": "DataSets",
-										"file_name": "@concat(item().TableName, '.csv')",
-										"c_delimiter": ","
+										"file_name": {
+											"value": "@variables('table_name')",
+											"type": "Expression"
+										},
+										"c_delimiter": {
+											"value": "@pipeline().parameters.file_delimtier",
+											"type": "Expression"
+										}
 									}
 								}
 							],
@@ -141,16 +154,46 @@
 									"parameters": {
 										"container_name": "out-bound",
 										"file_path": "DataSets-AUTO-AKV",
-										"file_name": "@concat(item().TableName, '.csv')",
-										"c_delimiter": ","
+										"file_name": {
+											"value": "@variables('table_name')",
+											"type": "Expression"
+										},
+										"c_delimiter": {
+											"value": "@pipeline().parameters.file_delimtier",
+											"type": "Expression"
+										}
 									}
 								}
 							]
+						},
+						{
+							"name": "Update-Table-Name",
+							"type": "SetVariable",
+							"dependsOn": [],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "table_name",
+								"value": {
+									"value": "@concat(item().TableName, '.csv')",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
 			}
 		],
+		"parameters": {
+			"file_delimtier": {
+				"type": "string",
+				"defaultValue": ","
+			}
+		},
+		"variables": {
+			"table_name": {
+				"type": "String"
+			}
+		},
 		"annotations": [],
 		"lastPublishTime": "2022-08-16T05:31:30Z"
 	},
