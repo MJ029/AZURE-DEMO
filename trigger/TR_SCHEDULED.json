@@ -3,7 +3,17 @@
 	"properties": {
 		"annotations": [],
 		"runtimeState": "Started",
-		"pipelines": [],
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "READ-WRITE-MULTIPLE-CSV-FILES_AKV",
+					"type": "PipelineReference"
+				},
+				"parameters": {
+					"file_delimtier": ","
+				}
+			}
+		],
 		"type": "ScheduleTrigger",
 		"typeProperties": {
 			"recurrence": {
