@@ -502,6 +502,216 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/READ-WRITE-MULTIPLE-CSV-FILES_AKV')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "READ-CONFIG",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "ExcelSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								}
+							},
+							"dataset": {
+								"referenceName": "READ_CONFIGS_AKV",
+								"type": "DatasetReference",
+								"parameters": {
+									"container_name": "configs",
+									"file_path": "pre-sales",
+									"file_name": "SIMPLE-CONFIG.xlsx"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "FILTER-ACTIVE-RECORDS",
+						"type": "Filter",
+						"dependsOn": [
+							{
+								"activity": "READ-CONFIG",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('READ-CONFIG').output.value",
+								"type": "Expression"
+							},
+							"condition": {
+								"value": "@equals(item().is_Active, '1')",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "ITERATE-TABLES",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "FILTER-ACTIVE-RECORDS",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('FILTER-ACTIVE-RECORDS').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "COPY-DATA-TO-OUT-BOUNT",
+									"type": "Copy",
+									"dependsOn": [
+										{
+											"activity": "Update-Table-Name",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "DelimitedTextSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "DelimitedTextReadSettings"
+											}
+										},
+										"sink": {
+											"type": "DelimitedTextSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "DelimitedTextWriteSettings",
+												"quoteAllText": true,
+												"fileExtension": ".txt"
+											}
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"typeConversion": true,
+											"typeConversionSettings": {
+												"allowDataTruncation": true,
+												"treatBooleanAsNumber": false
+											}
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "DS_BLOB_READ_WRITE_CSV_AKV",
+											"type": "DatasetReference",
+											"parameters": {
+												"container_name": "in-bound",
+												"file_path": "DataSets",
+												"file_name": {
+													"value": "@variables('table_name')",
+													"type": "Expression"
+												},
+												"c_delimiter": {
+													"value": "@pipeline().parameters.file_delimtier",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "DS_BLOB_READ_WRITE_CSV_AKV",
+											"type": "DatasetReference",
+											"parameters": {
+												"container_name": "out-bound",
+												"file_path": "DataSets-AUTO-AKV",
+												"file_name": {
+													"value": "@variables('table_name')",
+													"type": "Expression"
+												},
+												"c_delimiter": {
+													"value": "@pipeline().parameters.file_delimtier",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "Update-Table-Name",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "table_name",
+										"value": {
+											"value": "@concat(item().TableName, '.csv')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"file_delimtier": {
+						"type": "string",
+						"defaultValue": ","
+					}
+				},
+				"variables": {
+					"table_name": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-08-16T05:31:30Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/READ_CONFIGS_AKV')]",
+				"[concat(variables('factoryId'), '/datasets/DS_BLOB_READ_WRITE_CSV_AKV')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_BLOB_READ_WRITE_CSV')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -555,6 +765,65 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LS_BLOB_USING_ACCOUNT_KEY')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_BLOB_READ_WRITE_CSV_AKV')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LS_BLOB_USING_AKV",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"ls_prm_conn_string_name": "BLOB-CONN-CTRING"
+					}
+				},
+				"parameters": {
+					"container_name": {
+						"type": "string"
+					},
+					"file_path": {
+						"type": "string"
+					},
+					"file_name": {
+						"type": "string"
+					},
+					"c_delimiter": {
+						"type": "string",
+						"defaultValue": ","
+					}
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().file_name",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().file_path",
+							"type": "Expression"
+						},
+						"container": {
+							"value": "@dataset().container_name",
+							"type": "Expression"
+						}
+					},
+					"columnDelimiter": {
+						"value": "@dataset().c_delimiter",
+						"type": "Expression"
+					},
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LS_BLOB_USING_AKV')]"
 			]
 		},
 		{
@@ -722,132 +991,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_BLOB_USING_ACCOUNT_KEY')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This Connector allow us to connect with BLOB Storage Account using Account Key",
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_BLOB_USING_ACCOUNT_KEY_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_AZURE_KV')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"ls_prm_kv_name": {
-						"type": "string",
-						"defaultValue": "https://kv-surya-dev-cindia-001.vault.azure.net"
-					}
-				},
-				"annotations": [],
-				"type": "AzureKeyVault",
-				"typeProperties": {
-					"baseUrl": "[parameters('LS_AZURE_KV_properties_typeProperties_baseUrl')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LS_BLOB_USING_AKV')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"ls_prm_conn_string_name": {
-						"type": "string",
-						"defaultValue": "BLOB-CONN-CTRING"
-					}
-				},
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": {
-						"type": "AzureKeyVaultSecret",
-						"store": {
-							"referenceName": "LS_AZURE_KV",
-							"type": "LinkedServiceReference",
-							"parameters": {
-								"ls_prm_kv_name": "https://kv-surya-dev-cindia-001.vault.azure.net"
-							}
-						},
-						"secretName": {
-							"value": "[parameters('LS_BLOB_USING_AKV_properties_typeProperties_connectionString_secretName')]",
-							"type": "Expression"
-						}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_AZURE_KV')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_BLOB_READ_WRITE_CSV_AKV')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LS_BLOB_USING_AKV",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"ls_prm_conn_string_name": "BLOB-CONN-CTRING"
-					}
-				},
-				"parameters": {
-					"container_name": {
-						"type": "string"
-					},
-					"file_path": {
-						"type": "string"
-					},
-					"file_name": {
-						"type": "string"
-					},
-					"c_delimiter": {
-						"type": "string",
-						"defaultValue": ","
-					}
-				},
-				"annotations": [],
-				"type": "DelimitedText",
-				"typeProperties": {
-					"location": {
-						"type": "AzureBlobStorageLocation",
-						"fileName": {
-							"value": "@dataset().file_name",
-							"type": "Expression"
-						},
-						"folderPath": {
-							"value": "@dataset().file_path",
-							"type": "Expression"
-						},
-						"container": {
-							"value": "@dataset().container_name",
-							"type": "Expression"
-						}
-					},
-					"columnDelimiter": {
-						"value": "@dataset().c_delimiter",
-						"type": "Expression"
-					},
-					"escapeChar": "\\",
-					"firstRowAsHeader": true,
-					"quoteChar": "\""
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LS_BLOB_USING_AKV')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/READ_CONFIGS_AKV')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -899,170 +1042,70 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/READ-WRITE-MULTIPLE-CSV-FILES_AKV')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
+			"name": "[concat(parameters('factoryName'), '/LS_AZURE_KV')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"activities": [
-					{
-						"name": "READ-CONFIG",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "ExcelSource",
-								"storeSettings": {
-									"type": "AzureBlobStorageReadSettings",
-									"recursive": true,
-									"enablePartitionDiscovery": false
-								}
-							},
-							"dataset": {
-								"referenceName": "READ_CONFIGS_AKV",
-								"type": "DatasetReference",
-								"parameters": {
-									"container_name": "configs",
-									"file_path": "pre-sales",
-									"file_name": "SIMPLE-CONFIG.xlsx"
-								}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "FILTER-ACTIVE-RECORDS",
-						"type": "Filter",
-						"dependsOn": [
-							{
-								"activity": "READ-CONFIG",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('READ-CONFIG').output.value",
-								"type": "Expression"
-							},
-							"condition": {
-								"value": "@equals(item().is_Active, '1')",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "ITERATE-TABLES",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "FILTER-ACTIVE-RECORDS",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('FILTER-ACTIVE-RECORDS').output.value",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "COPY-DATA-TO-OUT-BOUNT",
-									"type": "Copy",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "DelimitedTextSource",
-											"storeSettings": {
-												"type": "AzureBlobStorageReadSettings",
-												"recursive": true,
-												"enablePartitionDiscovery": false
-											},
-											"formatSettings": {
-												"type": "DelimitedTextReadSettings"
-											}
-										},
-										"sink": {
-											"type": "DelimitedTextSink",
-											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings"
-											},
-											"formatSettings": {
-												"type": "DelimitedTextWriteSettings",
-												"quoteAllText": true,
-												"fileExtension": ".txt"
-											}
-										},
-										"enableStaging": false,
-										"translator": {
-											"type": "TabularTranslator",
-											"typeConversion": true,
-											"typeConversionSettings": {
-												"allowDataTruncation": true,
-												"treatBooleanAsNumber": false
-											}
-										}
-									},
-									"inputs": [
-										{
-											"referenceName": "DS_BLOB_READ_WRITE_CSV_AKV",
-											"type": "DatasetReference",
-											"parameters": {
-												"container_name": "in-bound",
-												"file_path": "DataSets",
-												"file_name": "@concat(item().TableName, '.csv')",
-												"c_delimiter": ","
-											}
-										}
-									],
-									"outputs": [
-										{
-											"referenceName": "DS_BLOB_READ_WRITE_CSV_AKV",
-											"type": "DatasetReference",
-											"parameters": {
-												"container_name": "out-bound",
-												"file_path": "DataSets-AUTO-AKV",
-												"file_name": "@concat(item().TableName, '.csv')",
-												"c_delimiter": ","
-											}
-										}
-									]
-								}
-							]
-						}
+				"parameters": {
+					"ls_prm_kv_name": {
+						"type": "string",
+						"defaultValue": "https://kv-surya-dev-cindia-001.vault.azure.net"
 					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
 				},
 				"annotations": [],
-				"lastPublishTime": "2022-08-16T05:31:30Z"
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('LS_AZURE_KV_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_BLOB_USING_ACCOUNT_KEY')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This Connector allow us to connect with BLOB Storage Account using Account Key",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_BLOB_USING_ACCOUNT_KEY_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_BLOB_USING_AKV')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"ls_prm_conn_string_name": {
+						"type": "string",
+						"defaultValue": "BLOB-CONN-CTRING"
+					}
+				},
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": {
+						"type": "AzureKeyVaultSecret",
+						"store": {
+							"referenceName": "LS_AZURE_KV",
+							"type": "LinkedServiceReference",
+							"parameters": {
+								"ls_prm_kv_name": "https://kv-surya-dev-cindia-001.vault.azure.net"
+							}
+						},
+						"secretName": {
+							"value": "[parameters('LS_BLOB_USING_AKV_properties_typeProperties_connectionString_secretName')]",
+							"type": "Expression"
+						}
+					}
+				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/READ_CONFIGS_AKV')]",
-				"[concat(variables('factoryId'), '/datasets/DS_BLOB_READ_WRITE_CSV_AKV')]"
+				"[concat(variables('factoryId'), '/linkedServices/LS_AZURE_KV')]"
 			]
 		}
 	]

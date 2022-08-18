@@ -25,20 +25,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/LS_BLOB_USING_ACCOUNT_KEY')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This Connector allow us to connect with BLOB Storage Account using Account Key",
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('LS_BLOB_USING_ACCOUNT_KEY_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/LS_AZURE_KV')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -53,6 +39,20 @@
 				"type": "AzureKeyVault",
 				"typeProperties": {
 					"baseUrl": "[parameters('LS_AZURE_KV_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LS_BLOB_USING_ACCOUNT_KEY')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This Connector allow us to connect with BLOB Storage Account using Account Key",
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('LS_BLOB_USING_ACCOUNT_KEY_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -982,7 +982,14 @@
 								{
 									"name": "COPY-DATA-TO-OUT-BOUNT",
 									"type": "Copy",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "Update-Table-Name",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "7.00:00:00",
 										"retry": 0,
@@ -1031,8 +1038,14 @@
 											"parameters": {
 												"container_name": "in-bound",
 												"file_path": "DataSets",
-												"file_name": "@concat(item().TableName, '.csv')",
-												"c_delimiter": ","
+												"file_name": {
+													"value": "@variables('table_name')",
+													"type": "Expression"
+												},
+												"c_delimiter": {
+													"value": "@pipeline().parameters.file_delimtier",
+													"type": "Expression"
+												}
 											}
 										}
 									],
@@ -1043,11 +1056,30 @@
 											"parameters": {
 												"container_name": "out-bound",
 												"file_path": "DataSets-AUTO-AKV",
-												"file_name": "@concat(item().TableName, '.csv')",
-												"c_delimiter": ","
+												"file_name": {
+													"value": "@variables('table_name')",
+													"type": "Expression"
+												},
+												"c_delimiter": {
+													"value": "@pipeline().parameters.file_delimtier",
+													"type": "Expression"
+												}
 											}
 										}
 									]
+								},
+								{
+									"name": "Update-Table-Name",
+									"type": "SetVariable",
+									"dependsOn": [],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "table_name",
+										"value": {
+											"value": "@concat(item().TableName, '.csv')",
+											"type": "Expression"
+										}
+									}
 								}
 							]
 						}
@@ -1056,6 +1088,17 @@
 				"policy": {
 					"elapsedTimeMetric": {},
 					"cancelAfter": {}
+				},
+				"parameters": {
+					"file_delimtier": {
+						"type": "string",
+						"defaultValue": ","
+					}
+				},
+				"variables": {
+					"table_name": {
+						"type": "String"
+					}
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-08-16T05:31:30Z"
