@@ -1,0 +1,19 @@
+{
+	"name": "TR_SCHEUDLED_TRIGGER",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"type": "TumblingWindowTrigger",
+		"typeProperties": {
+			"frequency": "Day",
+			"interval": 1,
+			"startTime": "2022-08-18T00:00:00Z",
+			"delay": "00:00:00",
+			"maxConcurrency": 50,
+			"retryPolicy": {
+				"intervalInSeconds": 30
+			},
+			"dependsOn": []
+		}
+	}
+}
